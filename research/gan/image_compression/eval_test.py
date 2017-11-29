@@ -12,40 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Tests for mnist_estimator.train."""
+"""Tests for gan.image_compression.eval."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-import numpy as np
-
 import tensorflow as tf
-
-import train
-
-FLAGS = tf.flags.FLAGS
-mock = tf.test.mock
+import eval  # pylint:disable=redefined-builtin
 
 
-class TrainTest(tf.test.TestCase):
+class EvalTest(tf.test.TestCase):
 
-  @mock.patch.object(train, 'data_provider', autospec=True)
-  def test_full_flow(self, mock_data_provider):
-    FLAGS.eval_dir = self.get_temp_dir()
-    FLAGS.batch_size = 16
-    FLAGS.max_number_of_steps = 2
-    FLAGS.noise_dims = 3
-
-    # Construct mock inputs.
-    mock_imgs = np.zeros([FLAGS.batch_size, 28, 28, 1], dtype=np.float32)
-    mock_lbls = np.concatenate(
-        (np.ones([FLAGS.batch_size, 1], dtype=np.int32),
-         np.zeros([FLAGS.batch_size, 9], dtype=np.int32)), axis=1)
-    mock_data_provider.provide_data.return_value = (mock_imgs, mock_lbls, None)
-
-    train.main(None)
+  def test_build_graph(self):
+    eval.main(None, run_eval_loop=False)
 
 
 if __name__ == '__main__':
