@@ -13,15 +13,27 @@
 # limitations under the License.
 # ==============================================================================
 
-"""Mask R-CNN Keypoint Head."""
+"""Keypoint Head.
+
+Contains Keypoint prediction head classes for different meta architectures.
+All the keypoint prediction heads have a predict function that receives the
+`features` as the first argument and returns `keypoint_predictions`.
+Keypoints could be used to represent the human body joint locations as in
+Mask RCNN paper. Or they could be used to represent different part locations of
+objects.
+"""
 import tensorflow as tf
 
-from object_detection.predictors.mask_rcnn_heads import mask_rcnn_head
+from object_detection.predictors.heads import head
 slim = tf.contrib.slim
 
 
-class KeypointHead(mask_rcnn_head.MaskRCNNHead):
-  """Mask RCNN keypoint prediction head."""
+class MaskRCNNKeypointHead(head.Head):
+  """Mask RCNN keypoint prediction head.
+
+  Please refer to Mask RCNN paper:
+  https://arxiv.org/abs/1703.06870
+  """
 
   def __init__(self,
                num_keypoints=17,
@@ -48,7 +60,7 @@ class KeypointHead(mask_rcnn_head.MaskRCNNHead):
         based on the number of object classes and the number of channels in the
         image features.
     """
-    super(KeypointHead, self).__init__()
+    super(MaskRCNNKeypointHead, self).__init__()
     self._num_keypoints = num_keypoints
     self._conv_hyperparams_fn = conv_hyperparams_fn
     self._keypoint_heatmap_height = keypoint_heatmap_height
@@ -57,20 +69,27 @@ class KeypointHead(mask_rcnn_head.MaskRCNNHead):
         keypoint_prediction_num_conv_layers)
     self._keypoint_prediction_conv_depth = keypoint_prediction_conv_depth
 
-  def _predict(self, roi_pooled_features):
+  def predict(self, features, num_predictions_per_location=1):
     """Performs keypoint prediction.
 
     Args:
-      roi_pooled_features: A float tensor of shape [batch_size, height, width,
+      features: A float tensor of shape [batch_size, height, width,
         channels] containing features for a batch of images.
+      num_predictions_per_location: Int containing number of predictions per
+        location.
 
     Returns:
       instance_masks: A float tensor of shape
           [batch_size, 1, num_keypoints, heatmap_height, heatmap_width].
+
+    Raises:
+      ValueError: If num_predictions_per_location is not 1.
     """
+    if num_predictions_per_location != 1:
+      raise ValueError('Only num_predictions_per_location=1 is supported')
     with slim.arg_scope(self._conv_hyperparams_fn()):
       net = slim.conv2d(
-          roi_pooled_features,
+          features,
           self._keypoint_prediction_conv_depth, [3, 3],
           scope='conv_1')
       for i in range(1, self._keypoint_prediction_num_conv_layers):
