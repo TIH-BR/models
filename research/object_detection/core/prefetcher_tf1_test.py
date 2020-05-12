@@ -21,12 +21,15 @@ from __future__ import print_function
 from six.moves import range
 import tensorflow as tf
 
+# pylint: disable=g-bad-import-order,
 from object_detection.core import prefetcher
-
-slim = tf.contrib.slim
+from tensorflow.contrib import slim as contrib_slim
+slim = contrib_slim
+# pylint: disable=g-bad-import-order
 
 
 class PrefetcherTest(tf.test.TestCase):
+  """Test class for prefetcher."""
 
   def test_prefetch_tensors_with_fully_defined_shapes(self):
     with self.test_session() as sess:
