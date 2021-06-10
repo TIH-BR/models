@@ -150,7 +150,7 @@ class DetectionFromImageModule(DetectionInferenceModule):
     """
     if zipped_side_inputs is None:
       zipped_side_inputs = []
-    sig = [tf.TensorSpec(shape=[1, None, None, 3],
+    sig = [tf.TensorSpec(shape=[None, None, None, 3],
                          dtype=tf.uint8,
                          name='input_tensor')]
     if use_side_inputs:
@@ -340,8 +340,8 @@ class DetectionFromImageAndBoxModule(DetectionInferenceModule):
     return detections
 
   @tf.function(input_signature=[
-      tf.TensorSpec(shape=[1, None, None, 3], dtype=tf.uint8),
-      tf.TensorSpec(shape=[1, None, 4], dtype=tf.float32)
+      tf.TensorSpec(shape=[None, None, None, 3], dtype=tf.uint8),
+      tf.TensorSpec(shape=[None, None, 4], dtype=tf.float32)
   ])
   def __call__(self, input_tensor, boxes):
     return self._run_segmentation_on_images(input_tensor, boxes)
