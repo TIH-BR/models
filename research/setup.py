@@ -8,7 +8,6 @@ from setuptools import setup
 # oauth2client package.
 REQUIRED_PACKAGES = [
     # Required for apache-beam with PY3
-    'avro-python3',
     'apache-beam',
     'pillow',
     'lxml',
