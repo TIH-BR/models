@@ -14,6 +14,9 @@
 # limitations under the License.
 # ==============================================================================
 
+import os
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH']='true'
+
 r"""Creates and runs TF2 object detection models.
 
 For local training/evaluation run:
@@ -29,6 +32,12 @@ python model_main_tf2.py -- \
 """
 from absl import flags
 import tensorflow.compat.v2 as tf
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+for gpu in gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)
+
 from object_detection import model_lib_v2
 
 flags.DEFINE_string('pipeline_config_path', None, 'Path to pipeline config '
